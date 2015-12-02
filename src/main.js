@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(compression());
+app.use(express.static(__dirname + '/../www/'));
 
 // routes configuration
 var routes = new Routes(Waypoint, client),
