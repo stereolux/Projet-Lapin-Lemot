@@ -2,6 +2,7 @@
 var redis = require('redis'),
 	mongoose = require('mongoose'),
 	conf = require('../conf/conf.js'),
+	tags = require('../conf/tags.js'),
 	Waypoint = require('../models/waypoint.js'),
 	Gateway = require('../gateway.js');
 
@@ -26,9 +27,10 @@ gateway.on('ready', function() {
 	console.log('Connected to LoRa gateway');
 });
 gateway.on('data', function(data) {
+	console.log(data);
 	var msg = data.split(';');
 	var sensorId = msg[0];
-	var tagId = msg[1];
+	var tagId = tags[msg[1].trim()];
 	client.get(tagId, function(err, value) {
 		// something went wrong
 		if (err) {

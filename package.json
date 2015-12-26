@@ -21,11 +21,9 @@
     "startVisit:prod": "APP_URL=https://datarabbit.herokuapp.com PORT=\"\" MONGOLAB_URI=mongodb://heroku_cnv5zc50:nstn9r1c2n8cte0mohtjj9dq55@ds037814.mongolab.com:37814/heroku_cnv5zc50 REDIS_URL=redis://h:pd1gboud9aee17d1aue93749dra@ec2-54-221-194-20.compute-1.amazonaws.com:6809 node src/misc/startVisit.js",
     "loraListener:prod": "APP_URL=https://datarabbit.herokuapp.com PORT=\"\" MONGOLAB_URI=mongodb://heroku_cnv5zc50:nstn9r1c2n8cte0mohtjj9dq55@ds037814.mongolab.com:37814/heroku_cnv5zc50 REDIS_URL=redis://h:pd1gboud9aee17d1aue93749dra@ec2-54-221-194-20.compute-1.amazonaws.com:6809 node src/misc/loraListener.js",
     "startVisit:dev": "node src/misc/startVisit.js",
-    "loraListener:dev": "node src/misc/startVisit.js",
+    "loraListener:dev": "node src/misc/loraListener.js",
     "server": "node src/main.js",
-    "arduino:loraListener": "cd arduino/loraListener && platformio run -e uno && cd -",
-    "arduino:startVisit": "cd arduino/startVisit && platformio run -e nano && cd -",
-    "arduino:nfcTest": "cd arduino/nfcTest && platformio run -e uno && cd -",
+    "arduino:startVisit": "cd arduino/startVisit && platformio run -e nano --target upload && cd -",
     "arduino:rabbit": "cd arduino/rabbit && platformio run -e mega --target upload && cd -"
   },
   "repository": {

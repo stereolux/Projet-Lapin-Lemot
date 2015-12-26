@@ -5,106 +5,76 @@
 #include <PN532_I2C.h>
 #include <PN532.h>
 #include <NfcAdapter.h>
-#include <Adafruit_CAP1188.h>
-#include <elapsedMillis.h>
+//#include <elapsedMillis.h>
 
+// debug flag to turn on/off serial output
+#define DEBUG true
 // ID of the given rabbit
-#define RABBIT_ID 1
+int RABBIT_ID = 1;
 
 // Somo2 conf
 Somo2 somo(8, 9);
 // NFC conf
 PN532_I2C pn532_i2c(Wire);
 NfcAdapter nfc = NfcAdapter(pn532_i2c);
-// capacitative touch conf
-Adafruit_CAP1188 cap = Adafruit_CAP1188();
 
 // char array to handle message to be sent through LoRa
 char msg [30];
 // flag to know if capacitative touch zones are active
 bool touchActive = false;
 // check elapsed time
-elapsedMillis timeElapsed;
+//elapsedMillis timeElapsed;
 // 30s without user action means user left
-long interval = 30000;
+//long interval = 5000;
 
 void setup() {
-	//Serial.begin(9600);
+	if (DEBUG) Serial.begin(9600);
 	setupSomo();
 	setupLoRa();
 	setupNfc();
-	setupTouchZones();
-	pinMode(13, OUTPUT);
-	digitalWrite(13, 0);
+	//setupTouchZones();
 }
 
 void loop() {
-	if (nfc.tagPresent() && !touchActive) {
+	if (nfc.tagPresent()) {
 		// touch can trigger sound since NFC tag is detected
-		touchActive = true;
-		digitalWrite(13, 1);
-		// clear cap buffer so no remaining data is in it
-		cap.touched();
+		//touchActive = true;
 		// user action detected, start timer
-		timeElapsed = 0;
-		computeMessage();
+		//timeElapsed = 0;
+		if (DEBUG) Serial.println("[NFC] Tag!");
+		sendTagID();
 		playSound(1, 2000);
-		sendLoRaMessage();
 	}
-	if (touchActive) {
-		int zone = checkZones();
-		// one zone has been touched
-		if (zone > 0) {
-			// get sound corresponding to the zone
-			int soundID = zone + 1;
-			playSound(soundID, 10000);
-			// clear cap buffer so no remaining data is in it
-			cap.touched();
-			// reset the timer since a user action has been detected
-			timeElapsed = 0;
-		}
+	/*if (touchActive) {
+		checkZones();
 	}
 	if (timeElapsed > interval) {
 		touchActive = false;
-		digitalWrite(13, 0);
-	}
+	}*/
 	delay(50);
 }
 
 /**
  * Check if any capacitative zone is touched and play according sound
  */
-int checkZones() {
-	int touched = cap.touched();
-	int zone = 0;
-	// touch was detected
-	if (touched != 0) {
-		// check for touch
-		for (int i = 0; i < 8; i++) {
-			if (touched & (1 << i)) {
-				zone = i + 1;
-			}
-		}
-	}
-	return zone;
+void checkZones() {
+	if (DEBUG) Serial.println("[Touch] TODO: Check zones");
+	// if a touch if found, reset timer
 }
 
 /**
- * Compute tag ID and prepare message
+ * Compute NFC tag ID and send it through LoRa
  */
-void computeMessage() {
+void sendTagID () {
 	// get tag id
 	NfcTag tag = nfc.read();
 	String uid = tag.getUidString();
 	sprintf(msg,"%i;%s#",RABBIT_ID, uid.c_str());
-	//Serial.println(msg);
-}
-
-/**
- * Send message through LoRa
- */
-void sendLoRaMessage () {
-	// send message through LoRa
+	if (DEBUG) {
+		Serial.print("[LoRa] ");
+		Serial.println(msg);
+	}
+	// send tag id through LoRa
 	sx1272.sendPacketTimeout(1, msg);
 	delay(100);
 }
@@ -139,6 +109,7 @@ void setupLoRa() {
 	sx1272.setPower('H');
 	// set current node address to 2
 	sx1272.setNodeAddress(2);
+	if (DEBUG) Serial.println("[LoRa] OK");
 }
 
 /**
@@ -150,6 +121,7 @@ void setupSomo() {
 	delay(1000);
 	somo.setVolume(20);
 	playSound(1, 2000);
+	if (DEBUG) Serial.println("[Somo] OK");
 }
 
 /**
@@ -157,14 +129,13 @@ void setupSomo() {
  */
 void setupNfc() {
 	// false flag to turn off verbosity
-	nfc.begin(true);
+	nfc.begin(DEBUG);
+	if (DEBUG) Serial.println("[NFC] OK");
 }
 
 /**
  * Setup capacitative touch zones
  */
-void setupTouchZones() {
-	cap.begin();
-	// disable multitouch
-	cap.writeRegister(0x2A, 0x80);
-}
+// void setupTouchZones() {
+// 	if (DEBUG) Serial.println("[Touch] TODO : Setup");
+// }
