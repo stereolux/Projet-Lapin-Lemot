@@ -116,12 +116,12 @@ void sendLoRaMessage () {
  */
 void playSound(int soundID, long duration) {
 	// wake up Somo2 module
-	somo.playFromSD();
+	// somo.playFromSD();
 	// play sound
 	somo.playTrack(1, soundID);
-	delay(duration);
+	// delay(duration);
 	// put the module in sleep mode to save energy
-	somo.sleep();
+	// somo.sleep();
 }
 
 /**
@@ -148,7 +148,7 @@ void setupSomo() {
 	somo.begin();
 	somo.reset();
 	delay(1000);
-	somo.setVolume(20);
+	somo.setVolume(30);
 	playSound(1, 2000);
 }
 

@@ -7,6 +7,7 @@ int TAG_ID = 1;
 char msg [30];
 int buttonPin = 8;
 int previousSensorVal = HIGH;
+int e;
 
 void setup() {
 	Serial.begin(9600);
@@ -26,12 +27,14 @@ void setup() {
 }
 
 void loop(void) {
-	int sensorVal = digitalRead(buttonPin);
-	if (sensorVal == HIGH && previousSensorVal == LOW) {
+	// int sensorVal = digitalRead(buttonPin);
+	// if (sensorVal == HIGH && previousSensorVal == LOW) {
 		sprintf(msg,"%i;%i#",SENSOR_ID, TAG_ID);
 		Serial.println(msg);
-		sx1272.sendPacketTimeout(1, msg);
-	}
-	previousSensorVal = sensorVal;
-	delay(50);
+		e = sx1272.sendPacketTimeout(1, msg);
+		Serial.print(F("Packet sent, state "));
+		Serial.println(e, DEC);
+	// }
+	// previousSensorVal = sensorVal;
+	delay(5000);
 }

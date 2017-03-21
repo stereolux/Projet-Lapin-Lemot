@@ -13,16 +13,18 @@ var notification = {
 	icon: path.join(__dirname, 'assets', 'logo.jpg')
 };
 
-var serialPort = new SerialPort('/dev/ttyACM0', {
+var serialPort = new SerialPort('/dev/ttyUSB1', {
 	parser: serialport.parsers.readline("\n")
 });
 
 serialPort.on('open',function() {
 	serialPort.on('data', function(data) {
+		console.log(data);
 		if (!data.startsWith('Error')) {
 			var tagId = tags[data.trim()];
 			if (tagId) {
 				startVisit(tagId, function(err, status, body) {
+					console.log(err);
 					if (!err && status === 201) {
 						notification.message = 'La visite peut commencer';
 						notifier.notify(notification);
